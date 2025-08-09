@@ -1,0 +1,103 @@
+name: Build and Test
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  release:
+    types: [ published ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install uv
+      uses: astral-sh/setup-uv@v4
+      with:
+        version: "latest"
+
+    - name: Set up Python ${{ matrix.python-version }}
+      run: uv python install ${{ matrix.python-version }}
+
+    - name: Install dependencies
+      run: |
+        uv sync --dev
+        uv pip install build twine
+
+    - name: Lint with ruff (if available)
+      run: |
+        if uv pip list | grep -q ruff; then
+          uv run ruff check otk/
+        else
+          echo "Ruff not installed, skipping linting"
+        fi
+      continue-on-error: true
+
+    - name: Test CLI installation
+      run: |
+        uv run otk --help
+        uv run otk guide --help
+
+    - name: Test package import
+      run: |
+        uv run python -c "import otk; print('Package imports successfully')"
+
+    - name: Build package
+      run: |
+        uv build
+
+    - name: Check package
+      run: |
+        uv run python -m twine check dist/*
+
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: dist-${{ matrix.python-version }}
+        path: dist/
+
+  build-release:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.event_name == 'release' && github.event.action == 'published'
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install uv
+      uses: astral-sh/setup-uv@v4
+      with:
+        version: "latest"
+
+    - name: Set up Python
+      run: uv python install 3.11
+
+    - name: Install build dependencies
+      run: |
+        uv sync --dev
+        uv pip install build twine
+
+    - name: Build package
+      run: |
+        uv build
+
+    - name: Upload release artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: release-dist
+        path: dist/
+
+    # Uncomment below to enable PyPI publishing
+    # - name: Publish to PyPI
+    #   env:
+    #     TWINE_USERNAME: __token__
+    #     TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
+    #   run: |
+    #     uv run python -m twine upload dist/*
