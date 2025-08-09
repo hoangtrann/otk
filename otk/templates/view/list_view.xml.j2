@@ -1,0 +1,10 @@
+    <!-- {{ model_human_name }} List View -->
+    <record id="view_{{ model_name_snake }}_list" model="ir.ui.view">
+        <field name="name">{{ model_name }}.list</field>
+        <field name="model">{{ model_name }}</field>
+        <field name="arch" type="xml">
+            <list string="{{ model_human_name }}">
+                <field name="name"/>
+            </list>
+        </field>
+    </record>

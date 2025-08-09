@@ -1,0 +1,10 @@
+from odoo import fields, models
+
+class {{ model_name.replace('.', '_').title() }}(models.Model):
+    _name = '{{ model_name }}'
+    _description = '{{ model_description }}'
+
+    name = fields.Char(string='Name', required=True)
+    {% for field in fields %}
+    {{ field.name }} = fields.{{ field.type }}(string='{{ field.string }}'{% if field.required %}, required=True{% endif %})
+    {% endfor %}

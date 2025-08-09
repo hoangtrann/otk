@@ -1,0 +1,12 @@
+<odoo>
+    <data>
+        <record id="{{ inherit_view_id }}" model="ir.ui.view">
+            <field name="name">{{ module_name }}.{{ view_id.split('.')[-1] }}.inherit</field>
+            <field name="model">{{ model_name }}</field>
+            <field name="inherit_id" ref="{{ view_id }}"/>
+            <field name="arch" type="xml">
+                {{ xpath_snippet | indent(16, True) }}
+            </field>
+        </record>
+    </data>
+</odoo>

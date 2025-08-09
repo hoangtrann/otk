@@ -1,0 +1,20 @@
+    <!-- {{ model_human_name }} Kanban View -->
+    <record id="view_{{ model_name_snake }}_kanban" model="ir.ui.view">
+        <field name="name">{{ model_name }}.kanban</field>
+        <field name="model">{{ model_name }}</field>
+        <field name="arch" type="xml">
+            <kanban string="{{ model_human_name }}">
+                <!-- Field definitions -->
+                <field name="name"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_card oe_kanban_global_click">
+                            <div class="oe_kanban_content">
+                                <div><strong><field name="name"/></strong></div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>

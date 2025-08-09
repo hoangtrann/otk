@@ -1,0 +1,31 @@
+<odoo>
+    <data>
+
+        <!-- {{ model_name }} Tree View -->
+        <record id="view_{{ model_name_snake }}_tree" model="ir.ui.view">
+            <field name="name">{{ model_name }}.tree</field>
+            <field name="model">{{ model_name }}</field>
+            <field name="arch" type="xml">
+                <tree string="{{ model_human_name }}">
+                    <field name="name"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- {{ model_name }} Form View -->
+        <record id="view_{{ model_name_snake }}_form" model="ir.ui.view">
+            <field name="name">{{ model_name }}.form</field>
+            <field name="model">{{ model_name }}</field>
+            <field name="arch" type="xml">
+                <form string="{{ model_human_name }}">
+                    <sheet>
+                        <group>
+                            <field name="name"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+    </data>
+</odoo>

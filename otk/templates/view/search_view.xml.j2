@@ -1,0 +1,13 @@
+    <!-- {{ model_human_name }} Search View -->
+    <record id="view_{{ model_name_snake }}_search" model="ir.ui.view">
+        <field name="name">{{ model_name }}.search</field>
+        <field name="model">{{ model_name }}</field>
+        <field name="arch" type="xml">
+            <search string="{{ model_human_name }}">
+                <!-- Search Fields -->
+                <field name="name" string="Name" filter_domain="[('name','ilike',self)]"/>
+                <!-- Quick Filters -->
+                <!-- Group By -->
+            </search>
+        </field>
+    </record>

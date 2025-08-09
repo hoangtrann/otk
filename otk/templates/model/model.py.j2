@@ -1,0 +1,86 @@
+from odoo import models, fields{% if api_decorators %}, api{% endif %}
+{%- if exceptions %}
+from odoo.exceptions import {{ exceptions | join(', ') }}
+{%- endif %}
+
+
+class {{ class_name }}(models.{{ model_type | default('Model') }}):
+    """{{ description | default(class_name + ' Model') }}"""
+    _name = '{{ model_name }}'
+    _description = '{{ description | default(class_name) }}'
+{%- if inherit %}
+    _inherit = '{{ inherit }}'
+{%- endif %}
+{%- if order %}
+    _order = '{{ order }}'
+{%- endif %}
+{%- if rec_name %}
+    _rec_name = '{{ rec_name }}'
+{%- endif %}
+
+    # Basic fields
+    name = fields.Char(string='Name', required=True)
+{%- if additional_fields %}
+
+{%- for field in additional_fields %}
+    {{ field.name }} = fields.{{ field.type }}(
+        {%- if field.string %}string='{{ field.string }}'{% endif %}
+        {%- if field.required %}, required={{ field.required | lower }}{% endif %}
+        {%- if field.readonly %}, readonly={{ field.readonly | lower }}{% endif %}
+        {%- if field.help %}, help='{{ field.help }}'{% endif %}
+        {%- if field.default %}, default={{ field.default }}{% endif %}
+        {%- if field.selection %}, selection={{ field.selection | pprint }}{% endif %}
+        {%- if field.comodel_name %}, comodel_name='{{ field.comodel_name }}'{% endif %}
+        {%- if field.domain %}, domain={{ field.domain | pprint }}{% endif %}
+        {%- if field.widget %}, widget='{{ field.widget }}'{% endif %}
+    )
+{%- endfor %}
+{%- endif %}
+{%- if model_type == 'TransientModel' %}
+
+    # Wizard-specific methods
+    def action_confirm(self):
+        """Process the wizard action"""
+        self.ensure_one()
+        # Get active records from context
+        active_model = self.env.context.get('active_model')
+        active_ids = self.env.context.get('active_ids', [])
+        
+        if active_model and active_ids:
+            active_records = self.env[active_model].browse(active_ids)
+            # TODO: Implement wizard logic here
+        
+        return {'type': 'ir.actions.act_window_close'}
+    
+    def action_cancel(self):
+        """Cancel the wizard"""
+        return {'type': 'ir.actions.act_window_close'}
+{%- endif %}
+{%- if compute_methods %}
+
+    # Compute methods
+{%- for method in compute_methods %}
+    @api.depends('{{ method.depends | join("', '") }}')
+    def {{ method.name }}(self):
+        """{{ method.description | default('Compute ' + method.name.replace('_compute_', '')) }}"""
+        for record in self:
+            # TODO: Implement computation logic
+            record.{{ method.field }} = False
+{%- endfor %}
+{%- endif %}
+{%- if action_methods %}
+
+    # Action methods
+{%- for method in action_methods %}
+    def {{ method.name }}(self):
+        """{{ method.description | default(method.name.replace('_', ' ').title()) }}"""
+{%- if method.type == 'record_action' %}
+        self.ensure_one()
+        # TODO: Implement record action
+        return True
+{%- else %}
+        # TODO: Implement action logic
+        pass
+{%- endif %}
+{%- endfor %}
+{%- endif %}

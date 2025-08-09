@@ -1,0 +1,61 @@
+from odoo import models, fields, api
+from odoo.exceptions import ValidationError
+
+class {{ class_name }}(models.AbstractModel):
+    """{{ description | default(class_name + ' Abstract Model') }}
+    
+    Abstract model providing common functionality for inheritance.
+    Cannot be instantiated directly - must be inherited by other models.
+    """
+    _name = '{{ model_name }}'
+    _description = '{{ description | default(class_name + ' Abstract Model') }}'
+
+    # Common fields shared across inheriting models
+    {% for field in fields %}
+    {{ field.name }} = fields.{{ field.type }}(
+        string='{{ field.string | default(field.name | title) }}'
+        {%- if field.required %}, required=True{% endif %}
+        {%- if field.readonly %}, readonly=True{% endif %}
+        {%- if field.help %}, help='{{ field.help }}'{% endif %}
+        {%- if field.default %}, default={{ field.default }}{% endif %}
+        {%- if field.selection %}, selection={{ field.selection | pprint }}{% endif %}
+        {%- if field.comodel_name %}, comodel_name='{{ field.comodel_name }}'{% endif %}
+        {%- if field.tracking %}, tracking=True{% endif %}
+    )
+    {% endfor %}
+
+    # Common methods available to all inheriting models
+    {% if methods %}
+    {% for method in methods %}
+    def {{ method.name }}(self):
+        """{{ method.description | default(method.name.replace('_', ' ').title()) }}
+        
+        {% if method.is_abstract %}
+        Abstract method - must be implemented by inheriting models.
+        {% else %}
+        Shared method for all inheriting models.
+        {% endif %}
+        """
+        {% if method.is_abstract %}
+        raise NotImplementedError("Method '{{ method.name }}' must be implemented by inheriting models")
+        {% else %}
+        # TODO: Implement shared logic
+        pass
+        {% endif %}
+    {% endfor %}
+    {% endif %}
+
+    @api.model
+    def create(self, vals_list):
+        """Override create to add common logic"""
+        # TODO: Add common pre-creation logic
+        records = super().create(vals_list)
+        # TODO: Add common post-creation logic
+        return records
+
+    def write(self, vals):
+        """Override write to add common logic"""
+        # TODO: Add common pre-write logic
+        result = super().write(vals)
+        # TODO: Add common post-write logic
+        return result

@@ -1,0 +1,55 @@
+from odoo import models, fields, api
+from odoo.exceptions import ValidationError
+
+class {{ class_name }}(models.TransientModel):
+    """{{ description | default(class_name + ' Wizard') }}
+    
+    Transient model for wizards and temporary operations.
+    """
+    _name = '{{ model_name }}'
+    _description = '{{ description | default(class_name + ' Wizard') }}'
+
+    # Wizard fields
+    {% for field in fields %}
+    {{ field.name }} = fields.{{ field.type }}(
+        string='{{ field.string | default(field.name | title) }}'
+        {%- if field.required %}, required=True{% endif %}
+        {%- if field.readonly %}, readonly=True{% endif %}
+        {%- if field.help %}, help='{{ field.help }}'{% endif %}
+        {%- if field.default %}, default={{ field.default }}{% endif %}
+        {%- if field.selection %}, selection={{ field.selection | pprint }}{% endif %}
+        {%- if field.comodel_name %}, comodel_name='{{ field.comodel_name }}'{% endif %}
+        {%- if field.domain %}, domain={{ field.domain | pprint }}{% endif %}
+    )
+    {% endfor %}
+
+    def action_confirm(self):
+        """Process the wizard action"""
+        self.ensure_one()
+        
+        # Get active records from context
+        active_model = self.env.context.get('active_model')
+        active_ids = self.env.context.get('active_ids', [])
+        
+        if active_model and active_ids:
+            active_records = self.env[active_model].browse(active_ids)
+            
+            # TODO: Implement wizard processing logic
+            for record in active_records:
+                # Process each selected record
+                pass
+        
+        # Return success notification or next action
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'display_notification',
+            'params': {
+                'message': 'Operation completed successfully',
+                'type': 'success',
+                'sticky': False,
+            }
+        }
+    
+    def action_cancel(self):
+        """Cancel the wizard"""
+        return {'type': 'ir.actions.act_window_close'}

@@ -1,0 +1,24 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "otk"
+version = "0.0.1"
+description = "Odoo ToolKit - A comprehensive CLI for Odoo development, scaffolding, and validation."
+authors = [{ name = "Hoang Tran", email = "thhoang.tr@gmail.com" }]
+dependencies = [
+    "typer[all]",
+    "rich",
+    "jinja2",
+    "lxml",
+    "inquirer",
+    "requests",
+]
+requires-python = ">=3.8"
+
+[project.scripts]
+otk = "otk.main:app"
+
+[tool.hatch.build.targets.wheel]
+packages = ["otk"]

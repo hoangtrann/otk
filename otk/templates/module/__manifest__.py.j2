@@ -1,0 +1,55 @@
+{
+    'name': "{{ module_name | title }}",
+    'version': '18.0.1.0.0',
+    'category': '{{ category | default('Uncategorized') }}',
+    'sequence': {{ sequence | default(100) }},
+    'summary': "{{ summary }}",
+    'description': """
+{{ description }}
+    """,
+    'author': "{{ author }}",
+    'website': "{{ website }}",
+    'license': "{{ license | default('LGPL-3') }}",
+    
+    # Dependencies
+    'depends': [
+        {% for dep in depends -%}
+        '{{ dep }}',
+        {% endfor -%}
+        {% if not depends -%}
+        'base',
+        {% endif -%}
+    ],
+    
+    # Data files
+    'data': [
+        # Security
+        # 'security/ir.model.access.csv',
+        # 'security/{{ module_name }}_security.xml',
+        
+        # Data files
+        # 'data/{{ module_name }}_data.xml',
+        
+        # Views
+        # 'views/{{ module_name }}_views.xml',
+        # 'views/{{ module_name }}_menus.xml',
+    ],
+    
+    # Demo data (only loaded in demo mode)
+    'demo': [
+        # 'demo/{{ module_name }}_demo.xml',
+    ],
+    
+    # Web assets
+    'assets': {
+        # 'web.assets_backend': [
+        #     '{{ module_name }}/static/src/js/**/*',
+        #     '{{ module_name }}/static/src/css/**/*',
+        # ],
+    },
+    
+    # Module flags
+    'installable': True,
+    'application': {{ 'True' if is_application else 'False' }},
+    'auto_install': {{ 'True' if auto_install else 'False' }},
+}
